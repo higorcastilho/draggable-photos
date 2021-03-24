@@ -89,17 +89,16 @@
       onDragStart (event, fotoPosition) {
         event.dataTransfer.dropEffect = 'move';
         event.dataTransfer.effectAllowed = 'move';
-        this.itemArrastado = fotoPosition;
+        this.itemArrastado = Math.floor(fotoPosition);
+        console.log(this.itemArrastado)
 
       },
       onDragEnter(taEmCima) {
         this.taEmCima = taEmCima;
-        console.log(this.itemArrastado, this.taEmCima)
 
         this.fotos[this.itemArrastado].position = taEmCima + 0.2
-        this.fotos[this.itemArrastado].position = Math.floor(this.fotos[this.itemArrastado].position)
+        //this.fotos[this.itemArrastado].position = Math.ceil(this.fotos[this.itemArrastado].position)
         this.sortFotos();
-        console.log(this.fotos) 
       },
       onDrop() {
         this.sortFotos();
