@@ -1,37 +1,12 @@
 <template>
-  <div>
-<!--     <div class='drop-zone' @drop="onDrop($event, 1)" @dragover.prevent @dragenter.prevent>
-      <div v-for='item in listOne' :key='item.title' class='drag-el' draggable @dragstart='startDrag($event, item)'>
-        {{ item.title }}
+  <div class="board-layout">
+    <div id="boardlists" class="board-lists">
+      <div id="list1" class="board-list" @drop="dropIt($event)" @dragover="allowDrop($event)">
+        <div v-for="item in items" :key="item.id" :id="`card${item.id}`" class="card" draggable="true" @dragstart="dragStart($event)">
+          <img style="width: 100px; height: 100px; object-fit: cover" :src="item.src" />
+        </div>
       </div>
-    </div>
-    <div class='drop-zone' @drop="onDrop($event, 2)" @dragover.prevent @dragenter.prevent>
-      <div v-for='item in listTwo' :key='item.title' class='drag-el' draggable @dragstart='startDrag($event, item)'>
-        {{ item.title }}
-      </div>
-    </div> -->
-    <div class="mt-10" style=" width: 80%; height: 200px; margin: 0 auto">
-      <v-row>
-        <div 
-          @dragover.prevent 
-          @dragenter.prevent
-          style="background: pink; border: 1px solid #000000;" 
-          v-for="(foto, index) in fotos" 
-          :key="foto.id" 
-          cols="4"
-          @dragenter = "onDragEnter(index)"
-          @drop="onDrop"
-        >
-          <div 
-            @dragstart="onDragStart($event, foto.position, index)" 
-            :draggable="true" 
-            style="width: 100px; height: 100px; background: steelblue; "
-          >
-            <p class="text-align-center">{{ foto.nome }}</p>
-          </div>
-        </div> 
-      </v-row>
-    </div>
+    </div>  
   </div>
 </template>
 
@@ -41,119 +16,127 @@
 
     data() {
       return {
-        itemArrastado: 0,
-        taEmCima: 0,
-        substituir: true,
-        fotos: [
-          { id: 0, nome: 'foto 0', src:'', position: 0 },
-          { id: 1, nome: 'foto 1', src:'', position: 4 },
-          { id: 2, nome: 'foto 2', src:'', position: 2 },
-          { id: 3, nome: 'foto 3', src:'', position: 3 },
-          { id: 4, nome: 'foto 4', src:'', position: 1 },
-          { id: 5, nome: 'foto 5', src:'', position: 5 },
-          { id: 6, nome: 'foto 6', src:'', position: 6 },
-          { id: 7, nome: 'foto 7', src:'', position: 7 },
-          { id: 8, nome: 'foto 8', src:'', position: 8 }
-        ],
-
-        // items: [
-        // {
-        //   id: 0,
-        //   title: 'Item A',
-        //   list: 1
-        // },
-        // {
-        //   id: 1,
-        //   title: 'Item B',
-        //   list: 1
-        // },
-        // {
-        //   id: 2,
-        //   title: 'Item C',
-        //   list: 2
-        // }]
+        items: [
+          {
+            id: 0,
+            src: "https://www.galeriadaarquitetura.com.br/Img/projeto/702x415/5651/casa-113917.jpg" 
+          },
+          {
+            id: 1,
+            src: "https://www.imperialseguros.com/wp-content/uploads/2020/06/leve-e-iluminada-esta-casa-na-bahia-mistura-estrutura-metalica-madeira-e-vidro_9.jpg" 
+          },
+          {
+            id: 2,
+            src: "https://fotos.vivadecora.com.br/decoracao-casas-modernas-teto-revestido-com-madeira-e-ilha-com-grama-verde-revistavd-185763-proportional-height_cover_medium.jpg" 
+          },
+          {
+            id: 3,
+            src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPDwJoSodBQBTnORcxszcppBaOnY38E9ItG4xSlRMNd9PJnaNLrTZVo3wkC7WsJKptMXw&usqp=CAU" 
+          }
+        ]
       }
     },
-
-
     methods: {
-
-      sortFotos () {
-        this.fotos.sort((a, b) => {
-          if (a.position > b.position) return 1;
-          if (a.position < b.position) return -1;
-          return 0;
-        })  
+      allowDrop(ev) {
+        ev.preventDefault();  // default is not to allow drop
       },
-
-      onDragStart (event, fotoPosition) {
-        event.dataTransfer.dropEffect = 'move';
-        event.dataTransfer.effectAllowed = 'move';
-        this.itemArrastado = Math.floor(fotoPosition);
-        console.log(this.itemArrastado)
-
+      dragStart(ev) {
+        // The 'text/plain' is referring the Data Type (DOMString) 
+        // of the Object being dragged.
+        // ev.target.id is the id of the Object being dragged
+        ev.dataTransfer.setData("text/plain", ev.target.id);
       },
-      onDragEnter(taEmCima) {
-        this.taEmCima = taEmCima;
+      dropIt(ev) {
+        ev.preventDefault();  // default is not to allow drop
+        let sourceId = ev.dataTransfer.getData("text/plain");
+        let sourceIdEl=document.getElementById(sourceId);
+        
+        // ev.target.id here is the id of target Object of the drop
+        let targetEl=document.getElementById(ev.target.id)
+      
 
-        this.fotos[this.itemArrastado].position = taEmCima + 0.2
-        //this.fotos[this.itemArrastado].position = Math.ceil(this.fotos[this.itemArrastado].position)
-        this.sortFotos();
-      },
-      onDrop() {
-        this.sortFotos();
-      }
-      // onDrop () {
-      //   const itemArrastadoObjeto = this.fotos[this.itemArrastado]
-      //   this.fotos.forEach((item, index) => {
-      //     if (index === 0) {
-      //       return ''
-      //     } else if (index <= this.taEmCima && this.substituir) {
-      //       this.fotos.splice(this.taEmCima + 1, 0, itemArrastadoObjeto)
-      //       //this.fotos.splice(this.taEmCima + 1, 1)
-      //       this.substituir = false;
-      //     }
-      //   })
+            // Same list. Swap the text of the two cards
+            // Just like swapping the values in two variables
+          
+            // Temporary holder of the destination Object
+            let holder=targetEl;
+            // The text of the destination Object. 
+            // We are really just moving the text, not the Card
+            let holderSrc=holder.childNodes[0].src;
+            let holderId = holder.id;
 
-      //   this.fotos.splice(this.itemArrastado, 1, this.fotos[this.taEmCima])
-      // }
-      // startDrag (event, item) {
-      //   event.dataTransfer.dropEffect = 'move';
-      //   event.dataTransfer.effectAllowed = 'move';
-      //   event.dataTransfer.setData('itemID', item.id);
-      // },
+            // Replace the destination Objects text with the sources text
+            targetEl.childNodes[0].src=sourceIdEl.childNodes[0].src;
+            targetEl.id=sourceIdEl.id;
+            // // Replace the sources text with the original destinations
+            sourceIdEl.childNodes[0].src=holderSrc;
+            sourceIdEl.id=holderId;
+            
+            holderSrc=''
+            holderId=''
 
-      // onDrop (event, list) {
-      //   const itemID = event.dataTransfer.getData('itemID');
-      //   const item = this.items.find(item => item.id == itemID);
-      //   item.list = list
-      // }
-    },
 
-    computed: {
-      listOne () {
-        return this.items.filter(item => item.list === 1);
-      },
-      listTwo () {
-        return this.items.filter(item => item.list === 2);
+            const DOMPhotosList = document.getElementById('list1').childNodes
+            const elements = Object.values(DOMPhotosList)
+            const sortedPhotos = elements.map(item => item.id.replace(/\D/g, '') )
+
+            console.log(sortedPhotos);
       }
     },
-    created() {
-      this.sortFotos();
-    }
   }
 </script>
 <style scoped>
-  .drop-zone {
-    background-color: #eee;
-    margin-bottom: 10px;
+  .board-layout {
+    background-color: rgb(100, 92, 165);
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 15px;
+    display: grid;
+    grid-template-rows: max-content auto;
+    grid-gap: 10px;
     padding: 10px;
+    height:800px;
   }
-
-  .drag-el {
-    background-color: #fff;
-    margin-bottom: 10px;
+.list-layout {
+    display: grid;
+    grid-gap: 10px;
+   
+  }
+.board-text {
+    font-weight: bold;
+    font-size: 28px;
     padding: 5px;
   }
+.board-lists {
+    display: flex;
+    grid-auto-columns: 275px;
+    grid-auto-flow: column;
+    grid-gap: 10px;
+    height: 200px;
+ 
+  }
   
+  .board-list {
+    background-color: rgb(235, 236, 240);
+    border-radius: 3px;
+    display: flex;
+    flex-wrap: wrap;
+    grid-auto-rows: max-content;
+    grid-gap: 10px;
+/* Chrome use a fixed height */
+    height: 400px;
+    padding: 10px;
+    width: 400px;
+  }
+  
+  .list-title {
+    font-size: 18px;
+    font-weight: bold;
+  }
+.card {
+    background-color: white;
+    border-radius: 3px;
+    box-shadow: 0 1px 0 rgba(9,30,66,.25);
+    padding: 10px;
+    cursor:pointer;
+  }
 </style>
