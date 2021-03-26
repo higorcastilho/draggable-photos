@@ -64,6 +64,9 @@
             // We are really just moving the text, not the Card
             let holderSrc=holder.childNodes[0].src;
             let holderId = holder.id;
+            if (holderId.slice(0, 4) !== 'card') {
+              return false;
+            }
 
             // Replace the destination Objects text with the sources text
             targetEl.childNodes[0].src=sourceIdEl.childNodes[0].src;
